@@ -1,0 +1,140 @@
+default:
+  image: python:3.10.6
+  before_script: # poetry virtual env initialization
+    - apt-get update -qy
+    - apt-get install -y libgl1-mesa-glx
+    - pip install poetry
+    - export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+    - poetry install --no-ansi --no-interaction
+    - source `poetry env info --path`/bin/activate
+    
+stages:
+  - linter
+  - quality
+  - pipelines
+  - examples
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
+
+variables:
+  LANG: C.UTF-8
+
+prospector:
+  stage: linter
+  script:
+    - echo "This is the prospector linter stage"
+    - poetry run prospector examples -A -F
+  allow_failure: true
+
+code_quality:
+  stage: quality
+  before_script:
+    - apk update
+    - apk add py3-pip
+  artifacts:
+    paths: [ gl-code-quality-report.json ]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+code_quality_html:
+  extends: code_quality
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+    paths: [ gl-code-quality-report.html ]
+
+qodana:
+  stage: quality
+  only:
+    - main
+    - develop
+    - merge_requests
+  image:
+    name: jetbrains/qodana-python-community:2023.2
+    entrypoint: [ "" ]
+  variables:
+    QODANA_TOKEN: $qodana_token
+  script:
+    - qodana --save-report --results-dir=$CI_PROJECT_DIR/.qodana/results
+      --cache-dir=$CI_PROJECT_DIR/.qodana/cache
+  artifacts:
+    paths:
+      - qodana/report/
+    expose_as: 'Qodana report'
+
+gtsrb_pipeline_test:
+  stage: pipelines
+  needs: [ ]
+  script:
+    - poetry run pytest ./examples/gtsrb/pipeline_tests/ --capture=tee-sys --tb=no
+  only:
+    - main
+  when: manual
+
+# Examples using Python 3.10
+knapsack_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example-fail knapsack/test_knapsack.py
+
+simple_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example simple/test_add.py
+    - poetry run example simple/test_avg.py
+
+trigonometry_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example trigonometry/test_cos.py
+    - poetry run example trigonometry/test_faulty_sin.py
+    - poetry run example trigonometry/test_sin.py
+
+house_pricing_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example house_pricing/test_house_pricing.py
+
+shortest_path_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example shortest_path/test_path.py
+
+facial_keypoints_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example-fail facial_keypoints/test_keypoints.py
+
+radar_retraining_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example-fail radar_retraining/test_radar.py
+
+gtsrb_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example-fail gtsrb/metamorphic_tests
+
+mnist_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example-fail mnist/metamorphic_tests/test_label_preserving.py
+    - poetry run example-fail mnist/metamorphic_tests/test_non_label_preserving.py
+
+numpy_example:
+  stage: examples
+  needs: [ ]
+  script:
+    - poetry run example linalg/test_solve.py
+    - poetry run example linalg/test_solve_tighter_oracle.py
+    - poetry run example linalg/test_transpose.py

@@ -1,0 +1,119 @@
+[tool.poetry]
+name = "gemtest-examples"
+version = "1.0.0"
+description = "Examples for the gemtest framework"
+keywords = ["metamorphic testing", "test", "framework"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Pytest",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Utilities",
+]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/tum-i4/gemtest-examples"
+authors = [
+    "Simon Speth <simon.speth@tum.de>",
+    "Amir Mohammad Taghizadegan <ge75qug@mytum.de>",
+    "Paul Schwind <paul.schwind@tum.de>",
+    "Serdar Özer",
+    "Alexander Schütz <alex.schuetz@tum.de>",
+    "Moritz Pötzsch <moritz.poetzsch@tum.de>",
+    "Mino Estrella <m.estrella@tum.de>",
+    "Fabian Schlachter <fabian.schlachter@tum.de>",
+    "Andrei Bratu <andrei.bratu@tum.de>",
+    "Tathagata Bandyopadhyay <tathagata.bandyopadhyay@tum.de>",
+    "Jan Bosenius <jan.bosenius@tum.de>",
+    "Alexander Hobmeier <alexander.hobmeier@tum.de>",
+    "Danny Benlin Oswan <danben.oswan@tum.de>",
+    "Martin Rau <martin.rau@tum.de>",
+    "Ting-Yu Lu <ty.lu@tum.de>",
+]
+maintainers = ["Simon Speth <simon.speth@tum.de>"]
+packages = [
+    { include = "examples", format = ["sdist", "wheel"] },
+    { include = "scripts", format = ["sdist", "wheel"] },
+]
+
+[tool.poetry.scripts]
+cov = "scripts.cov:html_coverage"
+install-hook = "scripts.install_hook:install_hook"
+lint = "scripts.lint:lint"
+test = "scripts.run_tests:run_tests"
+example = "scripts.run_tests:run_example"
+example-fail = "scripts.run_tests:run_example_fail"
+web-app = "scripts.run_web_app:run_web_app"
+
+mutation-test = "scripts.run_mutation_testing:run_cosmic_ray"
+mutation-new-config = "scripts.run_mutation_testing:create_new_config"
+mutation-init = "scripts.run_mutation_testing:init_new_session"
+mutation-baseline = "scripts.run_mutation_testing:check_baseline"
+mutation-exec = "scripts.run_mutation_testing:execute"
+mutation-text-report = "scripts.run_mutation_testing:create_report"
+mutation-html-report = "scripts.run_mutation_testing:create_html_report"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+gemtest = ">=1.0.0"
+hypothesis = "^6.49.1"
+matplotlib = "^3.5.2"
+numpy = "^1.23.0"
+opencv-python-headless = "^4.7.0.0"
+pytest = "^7.1.2"
+wrapt = "^1.14.1"
+
+[tool.poetry.group.test.dependencies]
+mypy = "^0.981"
+prospector = { extras = ["with_mypy", "with_bandit"], version = "^1.7.7" }
+pytest-cov = "^4.0.0"
+pytest-html = "^3.1.1"
+pytest-xdist = "^3.2.1"
+cosmic-ray = "^8.3.7"
+beautifulsoup4 = "^4.12.3"
+
+[tool.poetry.group.gui.dependencies]
+flask = "^2.1.3"
+pandas = "^1.4.3"
+pandas-stubs = "^1.4.3"
+
+[tool.poetry.group.examples.dependencies]
+albumentations = ">=1.3.0,<1.4.0"
+audiomentations = "^0.25.1"
+Dijkstar = "^2.6.0"
+imgaug = "^0.4.0"
+ipywidgets = "^8.1.1"
+jiwer = "^2.3.0"
+librosa = "^0.9.2"
+omegaconf = "^2.2.2"
+pillow = "^10.2.0"
+protobuf = "<3.20.1"
+pyloudnorm = "^0.1.0"
+torch = "^1.12.0"
+torchaudio = "^0.12.0"
+torchvision = "^0.13.0"
+scikit-learn = "^1.2.0"
+SoundFile = "^0.10.3"
+tensorflow = "2.8"
+tensorflow_datasets = "^4.8.0"
+tensorflow-addons = "^0.21.0"
+tensorflow-io-gcs-filesystem = "^0.32.0"
+torchlibrosa = "^0.0.9"
+tqdm = "^4.64.1"
+
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
